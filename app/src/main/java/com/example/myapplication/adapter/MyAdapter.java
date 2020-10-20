@@ -9,7 +9,6 @@ import android.widget.TextView;
 
 import com.example.myapplication.R;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -23,8 +22,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     private List<Integer> myDataset;
 
-    public MyAdapter(Integer a, Integer b) {
-        myDataset = new ArrayList<>(b);
+    public MyAdapter(Integer a, Integer b, List<Integer> myDataset) {
+        this.myDataset = myDataset;
         IntStream.rangeClosed(a, b).forEach(myDataset::add);
     }
 
