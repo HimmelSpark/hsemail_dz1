@@ -22,9 +22,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     private List<Integer> myDataset;
 
-    public MyAdapter(Integer a, Integer b, List<Integer> myDataset) {
+    public MyAdapter(List<Integer> myDataset) {
         this.myDataset = myDataset;
-        IntStream.rangeClosed(a, b).forEach(myDataset::add);
     }
 
     @NonNull

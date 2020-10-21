@@ -36,6 +36,9 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
+//    mplementation 'com.google.dagger:dagger:2.x' //TODO проставить версию
+//    annotationProcessor 'com.google.dagger:dagger-compiler:2.x'
+
     compileOnly 'org.projectlombok:lombok:1.18.14'
     annotationProcessor 'org.projectlombok:lombok:1.18.14'
 

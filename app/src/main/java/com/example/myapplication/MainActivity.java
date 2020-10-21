@@ -1,7 +1,6 @@
 package com.example.myapplication;
 
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.widget.Button;
 
 import com.example.myapplication.adapter.MyAdapter;
@@ -9,9 +8,9 @@ import com.example.myapplication.adapter.MyAdapter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,14 +28,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        adapter = new MyAdapter(1, 100, myDataSet);
-        recyclerView = findViewById(R.id.my_recycler_view);
-        int orientation = this.getResources().getConfiguration().orientation;
-        int spanCount = orientation == ORIENTATION_PORTRAIT ? 3 : 4;
-        layoutManager = new GridLayoutManager(this, spanCount);
-        recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setAdapter(adapter);
-
+        if (savedInstanceState == null) {
+            this.myDataSet = initializeRecycler(null);
+        } else {
+            this.myDataSet = Optional.of(savedInstanceState)
+                    .map(s -> s.getIntegerArrayList("myDataSet"))
+                    .map(this::initializeRecycler)
+                    .orElseGet(() -> initializeRecycler(null));
+        }
         final Button button = findViewById(R.id.btnAdd);
         button.setOnClickListener(view -> {
             RecyclerView.Adapter<MyAdapter.MyViewHolder> adapter = recyclerView.getAdapter();
@@ -44,22 +43,28 @@ public class MainActivity extends AppCompatActivity {
                     .map(RecyclerView.Adapter::getItemCount)
                     .map(number -> addToRecycler(adapter, ++number))
                     .orElse(null);
-
         });
+    }
+
+    private ArrayList<Integer> initializeRecycler(List<Integer> initialList) {
+        if (initialList == null) {
+            initialList = new ArrayList<>(100);
+            IntStream.rangeClosed(1, 100).forEach(initialList::add);
+        }
+        adapter = new MyAdapter(initialList);
+        recyclerView = findViewById(R.id.my_recycler_view);
+        int orientation = this.getResources().getConfiguration().orientation;
+        int spanCount = orientation == ORIENTATION_PORTRAIT ? 3 : 4;
+        layoutManager = new GridLayoutManager(this, spanCount);
+        recyclerView.setLayoutManager(layoutManager);
+        recyclerView.setAdapter(adapter);
+        return (ArrayList<Integer>) initialList;
     }
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putIntegerArrayList("myDataSet", (ArrayList<Integer>) myDataSet);
-    }
-
-    @Override
-    public void onPostCreate(@Nullable Bundle savedInstanceState, @Nullable PersistableBundle persistentState) {
-        super.onPostCreate(savedInstanceState, persistentState);
-        ArrayList<Integer> myDataSet = savedInstanceState.getIntegerArrayList("myDataSet");
-        this.myDataSet = Optional.ofNullable(myDataSet)
-                .orElseGet(ArrayList::new);
     }
 
     private Integer addToRecycler(RecyclerView.Adapter<MyAdapter.MyViewHolder> adapter, Integer number) {
